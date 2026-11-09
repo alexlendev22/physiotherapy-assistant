@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}{{ patient.full_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="h3">
+      {{ patient.full_name }}
+      {% if not patient.is_active %}<span class="badge text-bg-secondary fs-6 align-middle">Archivado</span>{% endif %}
+    </h1>
+    <div class="text-body-secondary">
+      {% if patient.age is not None %}{{ patient.age }} años · {% endif %}{{ patient.phone|default:"Sin teléfono" }}{% if patient.email %} · {{ patient.email }}{% endif %}
+    </div>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+    <a class="btn btn-primary" href="{% url 'scheduling:appointment_create' %}?paciente={{ patient.pk }}">Nueva cita</a>
+    <a class="btn btn-outline-primary" href="{% url 'patients:session_create' patient.pk %}">Nueva sesión</a>
+    <a class="btn btn-outline-secondary" href="{% url 'booking:invitation_create' %}?paciente={{ patient.pk }}">Enviar enlace de reserva</a>
+    <a class="btn btn-outline-secondary" href="{% url 'patients:update' patient.pk %}">Editar</a>
+  </div>
+</div>
+
+<ul class="nav nav-tabs mb-3" role="tablist">
+  {% for key, label in tabs %}
+  <li class="nav-item" role="presentation">
+    <button class="nav-link {% if key == tab %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#tab-{{ key }}" type="button" role="tab">{{ label }}</button>
+  </li>
+  {% endfor %}
+</ul>
+
+<div class="tab-content">
+  {# --- Datos personales --- #}
+  <div class="tab-pane fade {% if tab == 'datos' %}show active{% endif %}" id="tab-datos" role="tabpanel">
+    <div class="card card-body">
+      <dl class="row data-list mb-0">
+        <dt class="col-sm-4">DNI/NIE</dt><dd class="col-sm-8">{{ patient.national_id|default:"—" }}</dd>
+        <dt class="col-sm-4">Fecha de nacimiento</dt><dd class="col-sm-8">{{ patient.birth_date|date:"d/m/Y"|default:"—" }}</dd>
+        <dt class="col-sm-4">Sexo</dt><dd class="col-sm-8">{{ patient.get_sex_display|default:"—" }}</dd>
+        <dt class="col-sm-4">Teléfono</dt><dd class="col-sm-8">{{ patient.phone|default:"—" }}</dd>
+        <dt class="col-sm-4">Email</dt><dd class="col-sm-8">{{ patient.email|default:"—" }}</dd>
+        <dt class="col-sm-4">Dirección</dt><dd class="col-sm-8">{{ patient.address|default:"—" }}</dd>
+        <dt class="col-sm-4">Profesión</dt><dd class="col-sm-8">{{ patient.occupation|default:"—" }}</dd>
+        <dt class="col-sm-4">Contacto de emergencia</dt>
+        <dd class="col-sm-8">{{ patient.emergency_contact_name|default:"—" }}{% if patient.emergency_contact_phone %} · {{ patient.emergency_contact_phone }}{% endif %}</dd>
+        <dt class="col-sm-4">Consentimiento RGPD</dt>
+        <dd class="col-sm-8">
+          {% if patient.gdpr_consent %}<span class="text-success">Sí</span>, {{ patient.gdpr_consent_at|date:"d/m/Y" }}{% else %}<span class="text-danger">Pendiente</span>{% endif %}
+        </dd>
+      </dl>
+    </div>
+  </div>
+
+  {# --- Historial clínico --- #}
+  <div class="tab-pane fade {% if tab == 'historial' %}show active{% endif %}" id="tab-historial" role="tabpanel">
+    <div class="card card-body">
+      {% if history_fields %}
+      <dl class="row data-list">
+        {% for label, value in history_fields %}
+        <dt class="col-sm-4 text-capitalize">{{ label }}</dt>
+        <dd class="col-sm-8">{{ value|default:"—"|linebreaksbr }}</dd>
+        {% endfor %}
+      </dl>
+      {% else %}
+      <p class="text-body-secondary">Todavía no hay historial clínico.</p>
+      {% endif %}
+      <div><a class="btn btn-outline-primary" href="{% url 'patients:medical_history' patient.pk %}">{% if history_fields %}Editar historial{% else %}Rellenar historial{% endif %}</a></div>
+    </div>
+  </div>
+
+  {# --- Sesiones --- #}
+  <div class="tab-pane fade {% if tab == 'sesiones' %}show active{% endif %}" id="tab-sesiones" role="tabpanel">
+    {% for note in session_notes %}
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="fw-medium">{{ note.date|date:"l j \d\e F \d\e Y" }}</span>
+        <span>
+          {% if note.pain_level is not None %}<span class="badge text-bg-warning me-2">EVA {{ note.pain_level }}/10</span>{% endif %}
+          <a href="{% url 'patients:session_update' patient.pk note.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+        </span>
+      </div>
+      <div class="card-body row g-3">
+        {% if note.subjective %}<div class="col-md-6"><div class="soap-label">Subjetivo</div>{{ note.subjective|linebreaksbr }}</div>{% endif %}
+        {% if note.objective %}<div class="col-md-6"><div class="soap-label">Objetivo</div>{{ note.objective|linebreaksbr }}</div>{% endif %}
+        {% if note.assessment %}<div class="col-md-6"><div class="soap-label">Valoración</div>{{ note.assessment|linebreaksbr }}</div>{% endif %}
+        {% if note.plan %}<div class="col-md-6"><div class="soap-label">Plan</div>{{ note.plan|linebreaksbr }}</div>{% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <div class="card card-body text-body-secondary">No hay sesiones registradas.</div>
+    {% endfor %}
+  </div>
+
+  {# --- Citas --- #}
+  <div class="tab-pane fade {% if tab == 'citas' %}show active{% endif %}" id="tab-citas" role="tabpanel">
+    <h2 class="h6 text-body-secondary">Próximas</h2>
+    {% include "patients/_appointment_table.html" with appointments=upcoming_appointments empty_text="No hay citas próximas." %}
+    <h2 class="h6 text-body-secondary mt-4">Anteriores</h2>
+    {% include "patients/_appointment_table.html" with appointments=past_appointments empty_text="No hay citas anteriores." %}
+  </div>
+</div>
+{% endblock %}

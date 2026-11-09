@@ -1,0 +1,70 @@
+body {
+  background: #f7f8fa;
+}
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.page-header h1 {
+  margin: 0;
+}
+
+#calendar {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--bs-border-color);
+}
+
+.fc-event {
+  cursor: pointer;
+}
+
+dl.data-list dt {
+  font-weight: 500;
+  color: var(--bs-secondary-color);
+}
+
+.soap-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--bs-secondary-color);
+}
+
+.day-picker {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.day-picker .btn {
+  flex: 0 0 auto;
+  min-width: 4.5rem;
+  line-height: 1.2;
+}
+
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+  gap: 0.5rem;
+}
+
+/* Keep in sync with Appointment.STATUS_COLORS */
+.badge.status-pending { background: #f0ad4e; }
+.badge.status-confirmed { background: #0d6efd; }
+.badge.status-completed { background: #198754; }
+.badge.status-no_show { background: #dc3545; }
+.badge.status-cancelled { background: #6c757d; }
+
+.invitation-url {
+  font-family: var(--bs-font-monospace);
+  font-size: 0.8rem;
+}

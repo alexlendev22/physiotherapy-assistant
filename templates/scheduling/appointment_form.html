@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{% if object %}Cita{% else %}Nueva cita{% endif %}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="h3">{% if object %}Cita del {{ object.start|date:"d/m/Y H:i" }}{% else %}Nueva cita{% endif %}</h1>
+    {% if object %}
+    <a href="{{ object.patient.get_absolute_url }}" class="text-decoration-none">{{ object.patient.full_name }}</a>
+    {% if object.source == "invitation" %}<span class="badge text-bg-info ms-1">Reservada por enlace</span>{% endif %}
+    {% endif %}
+  </div>
+  {% if object %}
+  <div class="d-flex gap-2">
+    {% if object.session_note %}
+    <a class="btn btn-outline-primary" href="{% url 'patients:session_update' object.patient_id object.session_note.pk %}">Ver nota de sesión</a>
+    {% else %}
+    <a class="btn btn-outline-primary" href="{% url 'patients:session_create' object.patient_id %}?cita={{ object.pk }}">Registrar sesión</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+<form method="post" class="card card-body">
+  {% csrf_token %}
+  {% include "partials/form_fields.html" %}
+  <div class="d-flex gap-2">
+    <button class="btn btn-primary">Guardar</button>
+    <a class="btn btn-outline-secondary" href="{% url 'scheduling:agenda' %}">Volver a la agenda</a>
+  </div>
+</form>
+{% endblock %}

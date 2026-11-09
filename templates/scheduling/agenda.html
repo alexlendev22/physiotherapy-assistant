@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Agenda{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="h3">Agenda</h1>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'scheduling:timeoff_list' %}">Bloqueos</a>
+    <a class="btn btn-primary" href="{% url 'scheduling:appointment_create' %}">Nueva cita</a>
+  </div>
+</div>
+{% if not business_hours %}
+<div class="alert alert-warning">
+  Aún no has configurado tu horario laboral. <a href="{% url 'scheduling:working_hours' %}">Configúralo</a> para que los pacientes puedan reservar.
+</div>
+{% endif %}
+<p class="text-body-secondary small">Selecciona un hueco en el calendario para crear una cita, o pulsa una cita para editarla.</p>
+<div id="calendar"
+     data-events-url="{% url 'scheduling:events' %}"
+     data-new-url="{% url 'scheduling:appointment_create' %}"></div>
+{{ business_hours|json_script:"business-hours" }}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/locales/es.global.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const el = document.getElementById("calendar");
+  const isMobile = window.innerWidth < 768;
+  const calendar = new FullCalendar.Calendar(el, {
+    locale: "es",
+    firstDay: 1,
+    initialView: isMobile ? "timeGridDay" : "timeGridWeek",
+    headerToolbar: isMobile
+      ? { left: "prev,next", center: "title", right: "today" }
+      : { left: "prev,next today", center: "title", right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek" },
+    slotMinTime: "07:00:00",
+    slotMaxTime: "22:00:00",
+    allDaySlot: false,
+    nowIndicator: true,
+    height: "auto",
+    businessHours: JSON.parse(document.getElementById("business-hours").textContent),
+    selectable: true,
+    selectMirror: true,
+    events: el.dataset.eventsUrl,
+    select(info) {
+      const params = new URLSearchParams({ start: info.startStr, end: info.endStr });
+      window.location = `${el.dataset.newUrl}?${params}`;
+    },
+  });
+  calendar.render();
+});
+</script>
+{% endblock %}

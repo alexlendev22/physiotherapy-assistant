@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{% if object %}Editar {{ object.full_name }}{% else %}Nuevo paciente{% endif %}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="h3">{% if object %}Editar {{ object.full_name }}{% else %}Nuevo paciente{% endif %}</h1>
+</div>
+<form method="post" class="card card-body">
+  {% csrf_token %}
+  {% include "partials/form_fields.html" %}
+  <div class="d-flex gap-2">
+    <button class="btn btn-primary">Guardar</button>
+    <a class="btn btn-outline-secondary" href="{% if object %}{{ object.get_absolute_url }}{% else %}{% url 'patients:list' %}{% endif %}">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

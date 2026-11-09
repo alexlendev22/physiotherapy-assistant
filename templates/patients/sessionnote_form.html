@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Sesión · {{ patient.full_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="h3">{% if object %}Editar sesión{% else %}Nueva sesión{% endif %}</h1>
+    <a href="{{ patient.get_absolute_url }}" class="text-decoration-none">{{ patient.full_name }}</a>
+  </div>
+</div>
+<form method="post" class="card card-body">
+  {% csrf_token %}
+  {% include "partials/form_fields.html" %}
+  <div class="d-flex gap-2">
+    <button class="btn btn-primary">Guardar</button>
+    <a class="btn btn-outline-secondary" href="{{ patient.get_absolute_url }}?tab=sesiones">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

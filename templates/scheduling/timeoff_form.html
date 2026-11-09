@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Nuevo bloqueo{% endblock %}
+{% block content %}
+<div class="page-header"><h1 class="h3">Nuevo bloqueo</h1></div>
+<form method="post" class="card card-body">
+  {% csrf_token %}
+  {% include "partials/form_fields.html" %}
+  <div class="d-flex gap-2">
+    <button class="btn btn-primary">Guardar</button>
+    <a class="btn btn-outline-secondary" href="{% url 'scheduling:timeoff_list' %}">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

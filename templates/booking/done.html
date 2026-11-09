@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Cita confirmada{% endblock %}
+{% block navbar %}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7 col-lg-5">
+    <div class="card card-body text-center my-5 shadow-sm">
+      <div class="display-6 text-success mb-2">✓</div>
+      <h1 class="h4">¡Cita confirmada!</h1>
+      <p class="fs-5 mb-1">{{ appointment.start|date:"l j \d\e F \d\e Y" }}</p>
+      <p class="fs-5">{{ appointment.start|time:"H:i" }} – {{ appointment.end|time:"H:i" }}</p>
+      {% if appointment.patient.email %}
+      <p class="text-body-secondary mb-0">Te hemos enviado la confirmación a {{ appointment.patient.email }}.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Reserva tu cita{% endblock %}
+{% block navbar %}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="text-center my-4">
+      <h1 class="h3">Reserva tu cita</h1>
+      <p class="text-body-secondary mb-0">
+        {% if invitation.label %}{{ invitation.label }} · {% endif %}{{ invitation.duration_minutes }} minutos
+        {% if invitation.patient %}<br>Hola, {{ invitation.patient.first_name }}{% endif %}
+      </p>
+    </div>
+
+    {% if not days %}
+    <div class="alert alert-warning">Ahora mismo no hay horas disponibles. Contacta directamente con la consulta, por favor.</div>
+    {% else %}
+    <div class="card card-body mb-3">
+      <h2 class="h6">1. Elige el día</h2>
+      <div class="day-picker">
+        {% for day in days %}
+        <a href="?fecha={{ day|date:'Y-m-d' }}" class="btn {% if day == selected_day %}btn-primary{% else %}btn-outline-primary{% endif %}">
+          <small class="d-block text-uppercase">{{ day|date:"D" }}</small>
+          <span class="fs-5 fw-semibold">{{ day|date:"j" }}</span>
+          <small class="d-block">{{ day|date:"M" }}</small>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <form method="post" class="card card-body">
+      {% csrf_token %}
+      <input type="hidden" name="fecha" value="{{ selected_day|date:'Y-m-d' }}">
+
+      <h2 class="h6">2. Elige la hora · {{ selected_day|date:"l j \d\e F" }}</h2>
+      {% if slot_error %}<div class="alert alert-danger py-2">{{ slot_error }}</div>{% endif %}
+      <div class="slot-grid mb-4">
+        {% for slot in slots %}
+        <input type="radio" class="btn-check" name="slot" id="slot-{{ forloop.counter }}" value="{{ slot.isoformat }}" required
+               {% if slot.isoformat == selected_slot %}checked{% endif %}>
+        <label class="btn btn-outline-primary" for="slot-{{ forloop.counter }}">{{ slot|time:"H:i" }}</label>
+        {% endfor %}
+      </div>
+
+      <h2 class="h6">3. {% if invitation.patient %}Confirma tu reserva{% else %}Tus datos{% endif %}</h2>
+      {% include "partials/form_fields.html" %}
+      <button class="btn btn-primary btn-lg w-100">Confirmar reserva</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

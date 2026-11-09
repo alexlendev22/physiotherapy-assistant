@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Horario laboral{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="h3">Horario laboral</h1>
+    <p class="text-body-secondary mb-0">Los pacientes solo podrán reservar dentro de estas franjas. Puedes añadir varias por día (mañana y tarde).</p>
+  </div>
+  <a class="btn btn-outline-secondary" href="{% url 'scheduling:timeoff_list' %}">Vacaciones y bloqueos</a>
+</div>
+
+<form method="post" class="card card-body">
+  {% csrf_token %}
+  {{ formset.management_form }}
+  {% if formset.non_form_errors %}<div class="alert alert-danger">{{ formset.non_form_errors }}</div>{% endif %}
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead><tr><th>Día</th><th>Desde</th><th>Hasta</th><th class="text-center">Eliminar</th></tr></thead>
+      <tbody>
+        {% for form in formset %}
+        <tr>
+          <td>{% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}{{ form.weekday }}{% for e in form.weekday.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}</td>
+          <td>{{ form.start_time }}{% for e in form.start_time.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}</td>
+          <td>{{ form.end_time }}{% for e in form.end_time.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}</td>
+          <td class="text-center">{% if form.instance.pk %}<input type="checkbox" class="form-check-input" name="{{ form.DELETE.html_name }}" id="{{ form.DELETE.id_for_label }}">{% endif %}</td>
+        </tr>
+        {% if form.non_field_errors %}
+        <tr><td colspan="4" class="text-danger small">{{ form.non_field_errors|join:" " }}</td></tr>
+        {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="form-text">Guarda para que aparezcan filas vacías nuevas y seguir añadiendo franjas.</p>
+  <div><button class="btn btn-primary">Guardar horario</button></div>
+</form>
+{% endblock %}

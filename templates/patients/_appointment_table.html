@@ -1,0 +1,18 @@
+<div class="card">
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <tbody>
+        {% for appointment in appointments %}
+        <tr>
+          <td>{{ appointment.start|date:"D d/m/Y H:i" }}</td>
+          <td>{{ appointment.reason|default:"—" }}</td>
+          <td><span class="badge status-{{ appointment.status }}">{{ appointment.get_status_display }}</span></td>
+          <td class="text-end"><a href="{{ appointment.get_absolute_url }}" class="btn btn-sm btn-outline-secondary">Ver</a></td>
+        </tr>
+        {% empty %}
+        <tr><td class="text-body-secondary">{{ empty_text }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

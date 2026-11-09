@@ -1,0 +1,12 @@
+{% autoescape off %}Hola, {{ patient.first_name }}:
+
+Tu cita de fisioterapia ha quedado confirmada.
+
+Fecha: {{ appointment.start|date:"l j \d\e F \d\e Y" }}
+Hora: {{ appointment.start|time:"H:i" }} – {{ appointment.end|time:"H:i" }}
+{% if appointment.reason %}Motivo: {{ appointment.reason }}
+{% endif %}
+Si necesitas cambiarla o cancelarla, contacta con la consulta.
+
+¡Hasta pronto!
+{% endautoescape %}
