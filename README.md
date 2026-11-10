@@ -1,5 +1,10 @@
 # Physiotherapy Assistant
 
+Esta aplicación, actualmente en desarrollo, tiene como objetivo ofrecer una herramienta integral de gestión para trabajadores autónomos. Está concebida como una agenda virtual, una base de datos personal y un calendario que permitan organizar y gestionar de forma sencilla la actividad profesional.
+Aunque inicialmente está diseñada para un profesional de la fisioterapia, su estructura es adaptable y puede personalizarse para satisfacer las necesidades de otros tipos de trabajadores autónomos.
+El proyecto se encuentra actualmente en desarrollo, por lo que algunas funcionalidades pueden estar incompletas o sujetas a cambios.
+
+
 Asistente para fisioterapeutas: agenda, fichas de pacientes con historial clínico cifrado y enlaces de invitación para que los pacientes reserven cita.
 
 **Stack:** Python 3.12+, Django 5.2, SQLite en desarrollo y PostgreSQL en producción, Bootstrap 5 y FullCalendar (los dos últimos desde CDN).
